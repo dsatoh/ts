@@ -40,6 +40,9 @@ function Stanza(execute) {
     shadow.appendChild(style);
     var main = document.createElement("main");
     shadow.appendChild(main);
+    var toolBar = document.createElement("div");
+    toolBar.setAttribute("id", "tool_bar");
+    shadow.appendChild(toolBar);
 
     update(this);
   };
