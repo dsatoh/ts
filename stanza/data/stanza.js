@@ -1,4 +1,6 @@
 function Stanza(execute) {
+  var currentScript = document._currentScript || document.currentScript;
+  var ownerDocument = currentScript.ownerDocument;
   var proto = Object.create(HTMLElement.prototype);
 
   function createStanzaHelper(element) {
@@ -40,9 +42,10 @@ function Stanza(execute) {
     shadow.appendChild(style);
     var main = document.createElement("main");
     shadow.appendChild(main);
-    var toolBar = document.createElement("div");
-    toolBar.setAttribute("id", "tool_bar");
-    shadow.appendChild(toolBar);
+
+    var toolbarTemplate = ownerDocument.querySelector("template#tool_bar");
+    var clone = document.importNode(toolbarTemplate.content, true);
+    shadow.appendChild(clone);
 
     update(this);
   };
