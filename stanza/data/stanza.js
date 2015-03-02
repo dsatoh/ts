@@ -34,6 +34,26 @@ function Stanza(execute) {
     execute(createStanzaHelper(element), params);
   }
 
+  function downloadCsv() {
+    // TODO implement
+    console.log("DOWNLOAD CSV");
+    return false;
+  }
+
+  function downloadJson() {
+    // TODO implement
+    console.log("DOWNLOAD JSON");
+    return false;
+  }
+
+  function appendToolbar(element) {
+    var toolbarTemplate = ownerDocument.querySelector("template#tool_bar");
+    var clone = document.importNode(toolbarTemplate.content, true);
+    clone.querySelector("#download_csv").onclick = downloadCsv;
+    clone.querySelector("#download_json").onclick = downloadJson;
+    element.shadowRoot.appendChild(clone);
+  }
+
   proto.createdCallback = function() {
     var shadow = this.createShadowRoot();
 
@@ -42,10 +62,7 @@ function Stanza(execute) {
     shadow.appendChild(style);
     var main = document.createElement("main");
     shadow.appendChild(main);
-
-    var toolbarTemplate = ownerDocument.querySelector("template#tool_bar");
-    var clone = document.importNode(toolbarTemplate.content, true);
-    shadow.appendChild(clone);
+    appendToolbar(this);
 
     update(this);
   };
