@@ -26,16 +26,13 @@ function Stanza(execute) {
           console.log("query: sending to", params.endpoint);
         }
 
-        var p = $.ajax({
+        var p = fetch(params.endpoint + '?query=' + query, {
           method: method,
-          url: params.endpoint,
+          mode: 'cors',
           headers: {
             "Accept": "application/sparql-results+json"
-          },
-          data: {
-            query: query
           }
-        });
+        }).then(res => res.json());
 
         if (development) {
           p.then(function(value, textStatus) {
@@ -56,7 +53,9 @@ function Stanza(execute) {
           console.log("render: built:\n", htmlFragment)
         }
         var selector = params.selector || "main";
-        $(selector, element.shadowRoot).html(htmlFragment);
+
+        element.shadowRoot.querySelector(selector).innerHTML = htmlFragment;
+
         if (development) {
           console.log("render: wrote to \"" + selector + "\"")
         }
@@ -156,31 +155,32 @@ function Stanza(execute) {
     execute(createStanzaHelper(element), params);
   }
 
-  proto.createdCallback = function() {
-    var shadow = this.createShadowRoot();
+  class StanzaElement extends HTMLElement {
+    constructor() {
+      super(); 
+      var shadow = this.attachShadow({ mode: 'open' });
+      var style = document.createElement("style");
+      style.appendChild(document.createTextNode(descriptor.stylesheet));
+      shadow.appendChild(style);
+      var main = document.createElement("main");
+      shadow.appendChild(main);
 
-    var style = document.createElement("style");
-    style.appendChild(document.createTextNode(descriptor.stylesheet));
-    shadow.appendChild(style);
-    var main = document.createElement("main");
-    shadow.appendChild(main);
-
-    update(this);
-  };
-
-  proto.attributeChangedCallback = function(attrName, oldVal, newVal) {
-    var found = false;
-    descriptor.parameters.forEach(function(key) {
-      if (attrName == key) {
-        found = true;
-      }
-    });
-    if (found) {
       update(this);
     }
-  };
+    attributeChangedCallback(attrName, oldVal, newVal) {
+      var found = false;
+      descriptor.parameters.forEach(function(key) {
+        if (attrName == key) {
+          found = true;
+        }
+      });
+      if (found) {
+        update(this);
+      }
+    }
+  }
 
-  document.registerElement(descriptor.elementName, {
-    prototype: proto
-  });
+  if ('customElements' in window && !window.customElements.get(descriptor.elementName)) {
+     window.customElements.define(descriptor.elementName, StanzaElement);
+  }
 };
