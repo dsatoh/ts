@@ -1,0 +1,7 @@
+{
+  "name": "togostanza",
+  "dependencies": {
+    "handlebars": "^4.0.10",
+    "@webcomponents/webcomponentsjs": "^1.0.14"
+  }
+}

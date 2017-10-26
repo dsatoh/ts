@@ -1,6 +1,6 @@
 default: install
 
 install:
-	bower install
+	yarn install
 	go generate ./...
 	go install .
