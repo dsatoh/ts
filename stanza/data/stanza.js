@@ -1,6 +1,8 @@
 function Stanza(execute) {
   var proto = Object.create(HTMLElement.prototype);
   var development = descriptor.development;
+  var hb = Handlebars;
+  Handlebars.noConflict();
 
   function template(name) {
     var t = descriptor.templates[name];
@@ -12,12 +14,15 @@ function Stanza(execute) {
 
   function createStanzaHelper(element) {
     return {
+      handlebars: function() {
+        return hb;
+      },
       query: function(params) {
         if (development) {
           console.log("query: called", params);
         }
         var t = template(params.template);
-        var queryTemplate = Handlebars.compile(t, {noEscape: true});
+        var queryTemplate = hb.compile(t, {noEscape: true});
         var query = queryTemplate(params.parameters);
         var data = new URLSearchParams();
         data.set("query", query);
@@ -53,7 +58,7 @@ function Stanza(execute) {
           console.log("render: called", params)
         }
         var t = template(params.template);
-        var htmlTemplate = Handlebars.compile(t);
+        var htmlTemplate = hb.compile(t);
         var htmlFragment = htmlTemplate(params.parameters);
         if (development) {
           console.log("render: built:\n", htmlFragment)
